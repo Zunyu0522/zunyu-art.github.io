@@ -1,0 +1,299 @@
+/* ============================================================
+   style.css — V0 靜態版全站樣式
+   ============================================================
+
+   【引用方式】
+   在 HTML <head> 裡加入：
+   <link rel="stylesheet" href="style.css">
+
+   【與後端版本的對比】
+   V0 的 CSS 和 V1/V2 完全相同。
+   前端框架（Vue.js）改變的是「JS 的寫法」，
+   不是 CSS 的寫法 —— CSS 知識在各版本通用。
+
+   【檔案職責】
+   本檔案包含整個 V0 示範頁的所有樣式：
+   - 全站重置與基礎
+   - 導覽列（.site-nav）
+   - 容器（.container）
+   - 頁面標題（.page-hero）
+   - 篩選按鈕列（.filter-bar / .filter-btn）
+   - 作品格狀版面（.works-grid）
+   - 作品卡片（.work-card）
+   - 分類標籤（.work-tag）
+   - 頁尾（footer）
+   ============================================================ */
+
+
+/* ── 1. CSS 重置（Reset）──────────────────────────────────────
+   消除瀏覽器的預設 margin / padding，確保各瀏覽器一致。
+   box-sizing: border-box 讓 width/height 包含 padding 和 border，
+   避免元素的尺寸因 padding 而超出預期。
+──────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ── 2. 全站基礎 ────────────────────────────────────────────── */
+body {
+  background: #f9f7f2;        /* 暖白底色（龍蝦俠品牌色系）*/
+  color: #1c1a18;             /* 深暖黑主文字 */
+  font-family: 'Noto Sans TC', 'PingFang TC', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  padding-top: 70px;          /* 避免內容被固定導覽列遮住 */
+}
+
+
+/* ── 3. 導覽列（.site-nav）───────────────────────────────────
+   position: fixed → 固定在視窗頂端，不隨捲動消失。
+   z-index: 100 → 確保導覽列在所有內容的上方（Z 軸層疊順序）。
+──────────────────────────────────────────────────────────── */
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  background: rgba(249, 247, 242, 0.95);
+  backdrop-filter: blur(10px);        /* 毛玻璃效果：模糊下方內容 */
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  z-index: 100;
+}
+
+/* 導覽列內部容器：限制最大寬度並水平置中 */
+.nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1c1a18;
+  text-decoration: none;
+}
+
+/* 導覽連結列表 */
+.nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;           /* 移除預設的 li 前置點 */
+}
+
+.nav-links a {
+  color: #6a6560;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;  /* 英文轉大寫 */
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #c83200;             /* hover 時變橘紅色 */
+}
+
+
+/* ── 4. 版面容器（.container）────────────────────────────────
+   限制內容最大寬度並置中，是現代網頁排版的基本元件。
+   所有主要內容都應放在 .container 裡。
+──────────────────────────────────────────────────────────── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+
+/* ── 5. 頁面標題區（.page-hero）───────────────────────────── */
+.page-hero {
+  padding: 80px 0 40px;
+  text-align: center;
+}
+
+.page-hero h1 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.page-hero p {
+  color: #6a6560;
+  font-size: 16px;
+}
+
+
+/* ── 6. 篩選按鈕列（.filter-bar / .filter-btn）──────────────
+   Flexbox 水平排列，flex-wrap: wrap 讓按鈕在小螢幕時換行。
+   每個按鈕透過 data-filter 屬性與 JavaScript 互動：
+   JS 讀取按鈕的 data-filter 屬性 → 決定顯示哪些作品。
+──────────────────────────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 20px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;       /* 膠囊形按鈕 */
+  background: #f9f7f2;        /* 明確設定底色，避免繼承深色 */
+  color: #6a6560;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.filter-btn:hover {
+  border-color: #c83200;
+  color: #c83200;
+}
+
+/* .active class 由 JavaScript 動態新增
+   當使用者選擇某個篩選條件時，JS 呼叫 classList.add('active') */
+.filter-btn.active {
+  background: #c83200;
+  border-color: #c83200;
+  color: #fff;
+}
+
+
+/* ── 7. 作品格狀版面（.works-grid）──────────────────────────
+   CSS Grid auto-fill + minmax 的響應式技術：
+   - auto-fill：自動計算可以放幾欄（隨容器寬度而變）
+   - minmax(280px, 1fr)：每欄最小 280px，最大 1fr（平均分配剩餘空間）
+   效果：大螢幕 3-4 欄，中螢幕 2 欄，小螢幕 1 欄
+   完全不需要 @media query！
+──────────────────────────────────────────────────────────── */
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  padding-bottom: 80px;
+}
+
+
+/* ── 8. 作品卡片（.work-card）───────────────────────────────
+   overflow: hidden → 讓圓角裁切圖片超出的部分
+   transition → hover 時的平滑動畫
+   .hidden 由 JavaScript 新增（篩選時隱藏不符合的卡片）
+──────────────────────────────────────────────────────────── */
+.work-card {
+  background: #f1ede3;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.work-card:hover {
+  transform: translateY(-4px);                    /* 上浮效果 */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* JS 篩選時加上這個 class 隱藏不符合的卡片 */
+.work-card.hidden {
+  display: none;
+}
+
+
+/* ── 9. 作品縮圖（.work-thumb）──────────────────────────────
+   aspect-ratio: 4 / 3 → 固定寬高比為 4:3，不需要設定 height。
+   這個現代 CSS 屬性讓圖片容器自動維持比例。
+──────────────────────────────────────────────────────────── */
+.work-thumb {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+}
+
+/* 各作品縮圖的 CSS 漸層（實際專案改用 <img> 圖片）*/
+.thumb-1 { background: linear-gradient(135deg, #0a0a2e 0%, #c83200 100%); }
+.thumb-2 { background: radial-gradient(circle, #ff4500 0%, #0a0a2e 80%); }
+.thumb-3 { background: linear-gradient(45deg, #0d7377 0%, #ff8c00 100%); }
+.thumb-4 { background: conic-gradient(from 0deg, #0a0a2e, #c83200, #6b2fa0, #0a0a2e); }
+.thumb-5 { background: linear-gradient(180deg, #1a1a4e 0%, #c83200 100%); }
+.thumb-6 { background: radial-gradient(ellipse, #ff8c00 0%, #1a0a2e 80%); }
+
+
+/* ── 10. 卡片底部資訊（.work-meta）──────────────────────────
+   Flexbox 左右分開：標題在左，分類標籤在右
+──────────────────────────────────────────────────────────── */
+.work-meta {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.work-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+
+/* ── 11. 分類標籤徽章（.work-tag）───────────────────────────
+   border-radius: 999px → 完全圓角（膠囊形）
+   各分類用不同色系，但都是同個品牌色的不同飽和度版本
+──────────────────────────────────────────────────────────── */
+.work-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.tag-generative {
+  background: rgba(200, 50, 0, 0.10);
+  color: #9a2200;
+  border: 1px solid rgba(200, 50, 0, 0.20);
+}
+
+.tag-interactive {
+  background: rgba(107, 47, 160, 0.10);
+  color: #6b2fa0;
+  border: 1px solid rgba(107, 47, 160, 0.20);
+}
+
+.tag-video {
+  background: rgba(13, 115, 119, 0.10);
+  color: #0d7377;
+  border: 1px solid rgba(13, 115, 119, 0.20);
+}
+
+
+/* ── 12. 頁尾（footer）─────────────────────────────────────── */
+footer {
+  background: #f1ede3;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  text-align: center;
+  padding: 32px;
+  color: #6a6560;
+  font-size: 13px;
+}
+
+/* ── 13. 頁尾提示文字（.footer-hint）─────────────────────────────
+   V0 示範說明：指引學生前往下一個範例
+──────────────────────────────────────────────────────────── */
+.footer-hint {
+  margin-top: 8px;
+  color: #a09890;
+  font-size: 12px;
+}

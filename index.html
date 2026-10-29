@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  龍蝦俠 · 教學範例 V0 — 靜態多頁應用（Static MPA）          ║
+  ╠══════════════════════════════════════════════════════════════╣
+  ║  【示範目標】                                                ║
+  ║  展示純 HTML + CSS + JavaScript 的網頁開發方式。             ║
+  ║  這是龍蝦俠網站（Artist_Website）的簡化教學版本。           ║
+  ║                                                              ║
+  ║  【執行方式】（最簡單！不需要安裝任何東西）                  ║
+  ║  選一種方式打開：                                            ║
+  ║  A. 在這個檔案上按右鍵 → 「以瀏覽器開啟」                   ║
+  ║  B. VS Code → 安裝 Live Server 擴充套件 → 點擊「Go Live」   ║
+  ║                                                              ║
+  ║  【觀察重點】                                                ║
+  ║  1. HTML：作品資料直接寫在 <article> 標籤裡                 ║
+  ║  2. CSS：style.css 已獨立，HTML 用 <link> 引用（本頁第18行）║
+  ║  3. JavaScript：篩選功能全靠 classList + querySelectorAll    ║
+  ║  4. 缺點：新增作品需要改 HTML 重新部署 → V2 版本解決此問題  ║
+  ║                                                              ║
+  ║  【對應講義章節】                                            ║
+  ║  《從靜態網站到全端框架》第 1 章：靜態網站的能力邊界         ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V0 · 龍蝦俠作品集 — 靜態版</title>
+
+  <!--
+    ★ CSS 外部引用
+    把樣式獨立成 style.css 的好處：
+    1. HTML 專注結構，CSS 專注樣式 — 職責分離
+    2. 多個 HTML 頁面可以共用同一個 CSS 檔案
+    3. 瀏覽器可以快取 CSS 檔案（減少重複下載，提升速度）
+    4. 閱讀 HTML 時不會被大量 CSS 干擾
+
+    href="style.css" → 相對路徑，找同一資料夾下的 style.css
+  -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════════════════════
+       ① 導覽列（Navigation）
+
+       ★ V0 的問題：每個頁面（about.html、works.html、contact.html）
+         都要複製貼上這段 HTML。
+         → V3 Vue.js 版本把 Nav 抽成「元件（Component）」，只寫一次！
+  ═══════════════════════════════════════════════════════════ -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">龍蝦俠</a>
+      <ul class="nav-links">
+        <li><a href="index.html">首頁</a></li>
+        <li><a href="#works">作品集</a></li>
+        <li><a href="#about">關於</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ════════════════════════════════════════════════════
+         ② 頁面標題區（Hero）
+    ═══════════════════════════════════════════════════════ -->
+    <section class="page-hero">
+      <div class="container">
+        <h1>作品集</h1>
+        <p>新媒體藝術創作 · 生成藝術 · 互動裝置 · 影像</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════
+         ③ 作品集主體（篩選 + 格狀排列）
+
+         ★ 觀察：篩選按鈕的 data-filter 屬性
+           這是 HTML5 的「自訂資料屬性（Data Attribute）」語法。
+           JavaScript 用 getAttribute('data-filter') 讀取它。
+
+         ★ V2 vs V0 的差異：
+           V0（現在）：data-filter 的值是寫死在 HTML 裡的
+           V2 版本：按鈕是由 JavaScript fetch API 回來的資料動態生成的
+    ═══════════════════════════════════════════════════════ -->
+    <section id="works">
+      <div class="container">
+
+        <!-- 篩選按鈕列：class="filter-btn active" → 預設選中「全部」 -->
+        <div class="filter-bar">
+          <button class="filter-btn active" data-filter="all">全部</button>
+          <button class="filter-btn" data-filter="generative">生成藝術</button>
+          <button class="filter-btn" data-filter="interactive">互動裝置</button>
+          <button class="filter-btn" data-filter="video">影像</button>
+        </div>
+
+        <!-- 作品格狀列表
+             ★ 每個 <article> 都有 data-category 屬性
+               JavaScript 用這個屬性判斷「此作品屬於哪個分類」
+               決定篩選時是否顯示
+
+             ★ V0 問題：這6件作品的資料都寫死在這裡
+               要新增第7件 → 必須在這裡加 HTML → 重新上傳部署
+               V2 版本：資料存在後端陣列，只需修改後端！
+        -->
+        <div class="works-grid" id="worksGrid">
+
+          <article class="work-card" data-category="generative">
+            <div class="work-thumb thumb-1"></div>
+            <div class="work-meta">
+              <span class="work-title">數位海潮</span>
+              <span class="work-tag tag-generative">生成藝術</span>
+            </div>
+          </article>
+
+          <article class="work-card" data-category="generative">
+            <div class="work-thumb thumb-2"></div>
+            <div class="work-meta">
+              <span class="work-title">粒子宇宙</span>
+              <span class="work-tag tag-generative">生成藝術</span>
+            </div>
+          </article>
+
+          <article class="work-card" data-category="interactive">
+            <div class="work-thumb thumb-3"></div>
+            <div class="work-meta">
+              <span class="work-title">聲波幾何</span>
+              <span class="work-tag tag-interactive">互動裝置</span>
+            </div>
+          </article>
+
+          <article class="work-card" data-category="interactive">
+            <div class="work-thumb thumb-4"></div>
+            <div class="work-meta">
+              <span class="work-title">鏡中鏡</span>
+              <span class="work-tag tag-interactive">互動裝置</span>
+            </div>
+          </article>
+
+          <article class="work-card" data-category="video">
+            <div class="work-thumb thumb-5"></div>
+            <div class="work-meta">
+              <span class="work-title">時間的顏色</span>
+              <span class="work-tag tag-video">影像</span>
+            </div>
+          </article>
+
+          <article class="work-card" data-category="generative">
+            <div class="work-thumb thumb-6"></div>
+            <div class="work-meta">
+              <span class="work-title">呼吸機器</span>
+              <span class="work-tag tag-generative">生成藝術</span>
+            </div>
+          </article>
+
+        </div><!-- end #worksGrid -->
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ════════════════════════════════════════════════════════
+       ④ 頁尾（Footer）
+       ★ 同樣是每頁都要複製的靜態內容 → V3 元件化後只寫一次
+  ═══════════════════════════════════════════════════════════ -->
+  <footer>
+    <p>© 2024 龍蝦俠 · 新媒體藝術家 · V0 靜態版示範</p>
+    <p class="footer-hint">
+      ★ 下一步：開啟 ../v1-express-ssr/ 看看當後端伺服器加入後，程式碼會有什麼變化。
+    </p>
+  </footer>
+
+
+  <!-- ════════════════════════════════════════════════════════
+       ⑤ JavaScript：作品分類篩選
+
+       ★ 這裡的 JS 只有一個職責：根據使用者點擊的按鈕，
+         顯示或隱藏對應的作品卡片（純 DOM 操作）。
+
+       ★ 「原生 JS 手動 DOM 操作」vs「Vue.js 響應式」的對比：
+
+         原生 JS（V0 這個版本）：
+         → 你告訴瀏覽器「怎麼做」（命令式 / Imperative）
+         → 每次狀態改變，你必須手動更新每個相關的 DOM 元素
+
+         Vue.js（V3 版本）：
+         → 你告訴瀏覽器「應該顯示什麼」（宣告式 / Declarative）
+         → 資料改變，Vue 自動更新對應的 DOM
+  ═══════════════════════════════════════════════════════════ -->
+  <script>
+    /*
+      querySelectorAll('.filter-btn')
+      → 選取所有帶 .filter-btn class 的元素，回傳 NodeList
+      NodeList 類似陣列，但不完全是陣列（部分方法不同）
+    */
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const workCards  = document.querySelectorAll('.work-card');
+
+    filterBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+
+        /* 1. 移除所有按鈕的 active 狀態 */
+        filterBtns.forEach(function(b) { b.classList.remove('active'); });
+        /* 2. 把 active 加到被按的按鈕 */
+        this.classList.add('active');
+
+        /* 3. 讀取篩選條件（data-filter 自訂屬性）*/
+        const filter = this.getAttribute('data-filter');
+
+        /* 4. 遍歷所有作品卡片，決定顯示或隱藏 */
+        workCards.forEach(function(card) {
+          const category = card.getAttribute('data-category');
+          if (filter === 'all' || category === filter) {
+            card.classList.remove('hidden');   /* 顯示 */
+          } else {
+            card.classList.add('hidden');      /* 隱藏（style.css 定義 display:none）*/
+          }
+        });
+
+        /*
+          ★ Vue.js 版（V3）的等效寫法（只有這幾行！）：
+
+          // 1. data: { currentFilter: 'all', works: [...] }
+          // 2. computed: { filteredWorks() {
+          //      return this.works.filter(w => w.category === this.currentFilter)
+          //    }}
+          // 3. template: <article v-for="work in filteredWorks" ...>
+
+          currentFilter 改變 → Vue 自動重新計算 filteredWorks → DOM 自動更新
+          完全不需要 querySelectorAll / classList.add / classList.remove
+        */
+      });
+    });
+  </script>
+
+</body>
+</html>
